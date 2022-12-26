@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import java.net.URL?>
+<?import javafx.scene.text.Text?>
+<VBox xmlns         ="http://javafx.com/javafx"
+      xmlns:fx      ="http://javafx.com/fxml"
+      fx:controller ="com.example.wordle.GameBoardController"
+      prefHeight    ="400.0"
+      prefWidth     ="600.0">
+
+    <HBox fx:id="header" alignment="CENTER">
+        <Text> Wordle Clone </Text>
+    </HBox>
+
+    <GridPane>
+        <!-- First letter row -->
+        <Label GridPane.rowIndex="1" GridPane.columnIndex="0" fx:id="box11"> </Label>
+        <Label GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="box12"> </Label>
+        <Label GridPane.rowIndex="1" GridPane.columnIndex="2" fx:id="box13"> </Label>
+        <Label GridPane.rowIndex="1" GridPane.columnIndex="3" fx:id="box14"> </Label>
+        <Label GridPane.rowIndex="1" GridPane.columnIndex="4" fx:id="box15"> </Label>
+
+        <!-- Second letter row -->
+        <Label GridPane.rowIndex="2" GridPane.columnIndex="0" fx:id="box21"> </Label>
+        <Label GridPane.rowIndex="2" GridPane.columnIndex="1" fx:id="box22"> </Label>
+        <Label GridPane.rowIndex="2" GridPane.columnIndex="2" fx:id="box23"> </Label>
+        <Label GridPane.rowIndex="2" GridPane.columnIndex="3" fx:id="box24"> </Label>
+        <Label GridPane.rowIndex="2" GridPane.columnIndex="4" fx:id="box25"> </Label>
+
+        <!-- Third letter row -->
+        <Label GridPane.rowIndex="3" GridPane.columnIndex="0"  fx:id="box31"> </Label>
+        <Label GridPane.rowIndex="3" GridPane.columnIndex="1"  fx:id="box32"> </Label>
+        <Label GridPane.rowIndex="3" GridPane.columnIndex="2"  fx:id="box33"> </Label>
+        <Label GridPane.rowIndex="3" GridPane.columnIndex="3"  fx:id="box34"> </Label>
+        <Label GridPane.rowIndex="3" GridPane.columnIndex="4"  fx:id="box35"> </Label>
+
+        <!-- Fourth letter row -->
+        <Label GridPane.rowIndex="4" GridPane.columnIndex="0"  fx:id="box41"> </Label>
+        <Label GridPane.rowIndex="4" GridPane.columnIndex="1"  fx:id="box42"> </Label>
+        <Label GridPane.rowIndex="4" GridPane.columnIndex="2"  fx:id="box43"> </Label>
+        <Label GridPane.rowIndex="4" GridPane.columnIndex="3"  fx:id="box44"> </Label>
+        <Label GridPane.rowIndex="4" GridPane.columnIndex="4"  fx:id="box45"> </Label>
+
+        <!-- Fifth letter row -->
+        <Label GridPane.rowIndex="5" GridPane.columnIndex="0"  fx:id="box51"> </Label>
+        <Label GridPane.rowIndex="5" GridPane.columnIndex="1"  fx:id="box52"> </Label>
+        <Label GridPane.rowIndex="5" GridPane.columnIndex="2"  fx:id="box53"> </Label>
+        <Label GridPane.rowIndex="5" GridPane.columnIndex="3"  fx:id="box54"> </Label>
+        <Label GridPane.rowIndex="5" GridPane.columnIndex="4"  fx:id="box55"> </Label>
+
+        <!-- Sixth letter row -->
+        <Label GridPane.rowIndex="6" GridPane.columnIndex="0"  fx:id="box61"> </Label>
+        <Label GridPane.rowIndex="6" GridPane.columnIndex="1"  fx:id="box62"> </Label>
+        <Label GridPane.rowIndex="6" GridPane.columnIndex="2"  fx:id="box63"> </Label>
+        <Label GridPane.rowIndex="6" GridPane.columnIndex="3"  fx:id="box64"> </Label>
+        <Label GridPane.rowIndex="6" GridPane.columnIndex="4"  fx:id="box65"> </Label>
+    </GridPane>
+
+    <HBox fx:id="footer" alignment="CENTER">
+        <Button> Play Again </Button>
+        <Region> </Region>
+        <Button> Dark Mode </Button>
+        <Region> </Region>
+        <Button > Quit Game </Button>
+    </HBox>
+
+    <stylesheets>
+        <URL value="@gameboard-style.css"/>
+    </stylesheets>
+</VBox>

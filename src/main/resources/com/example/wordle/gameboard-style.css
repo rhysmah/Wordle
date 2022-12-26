@@ -1,0 +1,38 @@
+
+#header {
+    -fx-padding: 20px 0px;
+}
+
+#footer {
+    -fx-padding: 30px 0px;
+}
+
+Region {
+    -fx-padding: 10px;
+}
+
+Button {
+    -fx-padding: 8px;
+    -fx-font-size: 16px;
+}
+
+Text {
+    -fx-font-family: Impact;
+    -fx-font-size: 61px;
+    -fx-content-display: center;
+}
+
+GridPane {
+    -fx-vgap: 10px;
+    -fx-hgap: 10px;
+    -fx-alignment: center;
+}
+
+Label {
+    -fx-background-color: #DCDCDC;
+    -fx-content-display:  center;
+    -fx-alignment:        center;
+
+    -fx-pref-height: 60px;
+    -fx-pref-width:  60px;
+}
