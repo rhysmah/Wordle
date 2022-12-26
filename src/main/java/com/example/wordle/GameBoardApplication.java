@@ -3,6 +3,7 @@ package com.example.wordle;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import java.io.IOException;
 
@@ -19,15 +20,29 @@ public class GameBoardApplication extends Application {
      */
     @Override
     public void start(final Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(GameBoardApplication.class.getResource("gameboard.fxml"));
 
+        FXMLLoader fxmlLoader = new FXMLLoader(GameBoardApplication.class.getResource("gameboard.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), windowWidthInPixels, windowHeightInPixels);
-        stage.setTitle(windowTitle);
-        stage.setScene(scene);
 
         GameBoardController controller = fxmlLoader.getController();
+
+        // Sets up key presses from the keyboard.
+        scene.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode().isLetterKey()) {
+                controller.letterKeyPushed(keyEvent.getText().toUpperCase());
+            }
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                controller.enterKeyPushed();
+            }
+            if (keyEvent.getCode() == KeyCode.BACK_SPACE) {
+                controller.backspaceKeyPushed();
+            }
+        });
+
         controller.initializeLetterBoxes();
 
+        stage.setTitle(windowTitle);
+        stage.setScene(scene);
         stage.show();
     }
 

@@ -24,6 +24,8 @@ Label {
     -fx-content-display:  center;
     -fx-alignment:        center;
 
+    -fx-font-size: 40px;
+
     -fx-pref-height: 60px;
     -fx-pref-width:  60px;
 }
@@ -33,5 +35,5 @@ Label {
 }
 
 #footer {
-    -fx-padding: 30px 0px;
+    -fx-padding: 35px 0px;
 }
