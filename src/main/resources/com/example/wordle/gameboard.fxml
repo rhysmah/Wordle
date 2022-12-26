@@ -62,8 +62,6 @@
     <HBox fx:id="footer" alignment="CENTER">
         <Button> Play Again </Button>
         <Region> </Region>
-        <Button> Dark Mode </Button>
-        <Region> </Region>
         <Button > Quit Game </Button>
     </HBox>
 
