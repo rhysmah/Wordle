@@ -1,5 +1,6 @@
 package com.example.wordle;
 
+import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -11,6 +12,9 @@ public class GameBoardController {
     private static final int    LETTERS_PER_WORD          = 5;
     private static final int    TURNS_PER_GAME            = 6;
     private static final String CONTAINS_VALID_CHARACTERS = "^[a-zA-Z]*$";
+
+    private final String[]  userWordLetters;
+    private final Boolean[] winCondition;
 
     // First letter row
     @FXML private Label box11;
@@ -26,28 +30,28 @@ public class GameBoardController {
     @FXML private Label box24;
     @FXML private Label box25;
 
-    // Second letter row
+    // Third letter row
     @FXML private Label box31;
     @FXML private Label box32;
     @FXML private Label box33;
     @FXML private Label box34;
     @FXML private Label box35;
 
-    // Second letter row
+    // Fourth letter row
     @FXML private Label box41;
     @FXML private Label box42;
     @FXML private Label box43;
     @FXML private Label box44;
     @FXML private Label box45;
 
-    // Second letter row
+    // Fifth letter row
     @FXML private Label box51;
     @FXML private Label box52;
     @FXML private Label box53;
     @FXML private Label box54;
     @FXML private Label box55;
 
-    // Second letter row
+    // Sixth letter row
     @FXML private Label box61;
     @FXML private Label box62;
     @FXML private Label box63;
@@ -55,7 +59,6 @@ public class GameBoardController {
     @FXML private Label box65;
 
     private Label[][] letterBoxes;
-    private String[]  userWordLetters;
     private int       letterIndex;
     private int       rowIndex;
     private int       playerTurn;
@@ -69,6 +72,7 @@ public class GameBoardController {
         rowIndex        = 0;
         playerTurn      = 0;
         userWordLetters = new String[LETTERS_PER_WORD];
+        winCondition    = new Boolean[LETTERS_PER_WORD];
     }
 
     public void initializeLetterBoxes() {
@@ -87,6 +91,10 @@ public class GameBoardController {
             String userWord = String.join("", userWordLetters);
 
             if (validateUserGuess(userWord)) {
+                flipAnimationForValidWord();
+                checkIfWinConditionMet();
+                checkIfPlayerHasTurnsRemaining();
+
                 playerTurn++;
                 rowIndex++;
                 letterIndex = 0;
@@ -95,6 +103,65 @@ public class GameBoardController {
                 bounceAnimationForInvalidWord();
             }
         }
+    }
+
+    protected void backspaceKeyPushed() {
+        if (letterIndex > 0) {
+            letterIndex--;
+            letterBoxes[rowIndex][letterIndex].setText("");
+            userWordLetters[letterIndex] = "";
+        }
+    }
+
+    protected void letterKeyPushed(final String letter) {
+        addLetterToGameboardLetterBox(letter);
+    }
+
+    private void checkIfPlayerHasTurnsRemaining() {
+        if (playerTurn == TURNS_PER_GAME) {
+            // End game pop-up
+            // Ask if they want to play again or quit.
+        }
+    }
+
+    private void resetUserWord() {
+        Arrays.fill(userWordLetters, "");
+    }
+
+    private void checkIfWinConditionMet() {
+        if (winConditionMet()) {
+            // Pop up needed.
+        } else {
+            resetUserWord();
+        }
+    }
+
+    private boolean winConditionMet() {
+        for (boolean booleanValue : winCondition) {
+            if (!booleanValue) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void flipAnimationForValidWord() {
+        for (int i = 0; i < userWordLetters.length; i++) {
+            flipAnimation(letterBoxes[rowIndex][i]);
+        }
+    }
+
+    private void flipAnimation(final Label letterBox) {
+        ScaleTransition showLetterBack = new ScaleTransition(Duration.millis(250), letterBox);
+        showLetterBack.setFromY(1);
+        showLetterBack.setToY(0);
+
+        ScaleTransition showLetterFront = new ScaleTransition(Duration.millis(250), letterBox);
+        showLetterFront.setFromY(0);
+        showLetterFront.setToY(1);
+
+        showLetterBack.play();
+        showLetterBack.setOnFinished(actionEvent -> showLetterFront.play());
     }
 
     private void bounceAnimationForInvalidWord() {
@@ -116,24 +183,11 @@ public class GameBoardController {
         wiggleLetterBox.play();
     }
 
-    protected void backspaceKeyPushed() {
-        if (letterIndex > 0) {
-            letterIndex--;
-            letterBoxes[rowIndex][letterIndex].setText("");
-            userWordLetters[letterIndex] = "";
-        }
-    }
-
-    protected void letterKeyPushed(final String letter) {
-        addLetterToBox(letter);
-    }
-
     private void addLetterToUserWord(final String letter) {
         userWordLetters[letterIndex] = letter;
     }
 
-
-    private void addLetterToBox(final String letter) {
+    private void addLetterToGameboardLetterBox(final String letter) {
         if (letterIndex < 5) {
             letterBoxes[rowIndex][letterIndex].setText(letter);
             addLetterToUserWord(letter);
@@ -162,10 +216,8 @@ public class GameBoardController {
         return Arrays.asList(WordList.WORDS).contains(word);
     }
 
-    /**
-     * Checks that word contains exactly five letters and is a valid English word.
-     * @param word the word (String) to be validated.
-     * @return true if the word is a real five-letter word.
+    /*
+     * Checks that word is a valid five-letter English word.
      */
     private boolean validateUserGuess(final String word) {
         return validLength(word) && validCharacters(word) && validWord(word);
