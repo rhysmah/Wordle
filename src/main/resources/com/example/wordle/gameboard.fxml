@@ -11,7 +11,7 @@
       prefHeight    ="400.0"
       prefWidth     ="600.0">
 
-    <HBox fx:id="header" alignment="CENTER">
+    <HBox id="header" alignment="CENTER">
         <Text> Wordle Clone </Text>
     </HBox>
 
@@ -59,10 +59,10 @@
         <Label GridPane.rowIndex="6" GridPane.columnIndex="4"  fx:id="box65"> </Label>
     </GridPane>
 
-    <HBox fx:id="footer" alignment="CENTER">
-        <Button> Play Again </Button>
+    <HBox id="footer" alignment="CENTER">
+        <Button fx:id="startGame" onAction="#startGameButtonClick"> Play Again </Button>
         <Region> </Region>
-        <Button > Quit Game </Button>
+        <Button fx:id="quitGame" onAction="#quitGameButtonClick"> Quit Game </Button>
     </HBox>
 
     <stylesheets>

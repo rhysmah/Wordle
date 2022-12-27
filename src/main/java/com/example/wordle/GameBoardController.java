@@ -2,19 +2,26 @@ package com.example.wordle;
 
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
 import java.util.Arrays;
+import java.util.Random;
 
 public class GameBoardController {
 
     private static final int    LETTERS_PER_WORD          = 5;
     private static final int    TURNS_PER_GAME            = 6;
     private static final String CONTAINS_VALID_CHARACTERS = "^[a-zA-Z]*$";
+    private static final Random RANDOM = new Random();
 
     private final String[]  userWordLetters;
-    private final Boolean[] winCondition;
+    private final boolean[] winCondition;
+
+    @FXML private Button quitGame;
+    @FXML private Button startGame;
 
     // First letter row
     @FXML private Label box11;
@@ -63,6 +70,7 @@ public class GameBoardController {
     private int       rowIndex;
     private int       playerTurn;
     private long      lastBounceAnimation;
+    private String    gameWord;
 
     /**
      * Creates an object of type GameBoard.
@@ -71,8 +79,9 @@ public class GameBoardController {
         letterIndex     = 0;
         rowIndex        = 0;
         playerTurn      = 0;
+        winCondition    = new boolean[] { false, false, false, false, false} ;
         userWordLetters = new String[LETTERS_PER_WORD];
-        winCondition    = new Boolean[LETTERS_PER_WORD];
+        gameWord        = WordList.WORDS[RANDOM.nextInt(WordList.WORDS.length - 1)];
     }
 
     public void initializeLetterBoxes() {
@@ -86,21 +95,47 @@ public class GameBoardController {
         };
     }
 
+    public void initializeButtons() {
+        startGame.setOnAction(actionEvent -> startGameButtonClick());
+        quitGame.setOnAction(actionEvent -> quitGameButtonClick());
+    }
+
+    public void startGameButtonClick() {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 5; j++) {
+                letterBoxes[i][j].setText("");
+                letterBoxes[i][j].setStyle("-fx-background-color: #DCDCDC;");
+            }
+        }
+        letterIndex = 0;
+        rowIndex = 0;
+        playerTurn = 0;
+        gameWord = WordList.WORDS[RANDOM.nextInt(WordList.WORDS.length - 1)];
+        resetUserWord();
+    }
+
+    public void quitGameButtonClick() {
+        Platform.exit();
+    }
+
     protected void enterKeyPushed() {
-        if (userWordLetters.length == LETTERS_PER_WORD) {
+
+        // Enter key stops working when user wins game.
+        if (userWordLetters.length == LETTERS_PER_WORD && !winConditionMet()) {
             String userWord = String.join("", userWordLetters);
 
             if (validateUserGuess(userWord)) {
-                flipAnimationForValidWord();
+                printLetter();
                 checkIfWinConditionMet();
                 checkIfPlayerHasTurnsRemaining();
 
+                // Increment player turn, then move to the first letter of the next row.
                 playerTurn++;
                 rowIndex++;
                 letterIndex = 0;
 
             } else {
-                bounceAnimationForInvalidWord();
+                invalidWordAnimation();
             }
         }
     }
@@ -114,7 +149,36 @@ public class GameBoardController {
     }
 
     protected void letterKeyPushed(final String letter) {
-        addLetterToGameboardLetterBox(letter);
+        if (!winConditionMet()) {
+            addLetterToGameboardLetterBox(letter);
+        }
+    }
+
+    private void printLetter() {
+
+        letterIndex = 0;
+        String[] gameWordLetters  = gameWord.split("");
+
+        while (letterIndex < LETTERS_PER_WORD) {
+            String playerWordLetter = userWordLetters[letterIndex];
+            Label  gameWordLetter   = letterBoxes[rowIndex][letterIndex];
+
+            if (playerWordLetter.equals(gameWordLetters[letterIndex])) {
+                animateLetter(gameWordLetter, "#3CB371;"); // Green
+                gameWordLetters[letterIndex] = "";
+                userWordLetters[letterIndex] = "";
+                winCondition[letterIndex] = true;
+
+            } else if (Arrays.asList(gameWordLetters).contains(playerWordLetter)) {
+                animateLetter(gameWordLetter, "#FFD700;"); // Yellow
+                gameWordLetters[letterIndex] = "";
+                userWordLetters[letterIndex] = "";
+
+            } else {
+                animateLetter(gameWordLetter, "#DCDCDC;"); // Grey
+            }
+            letterIndex++;
+        }
     }
 
     private void checkIfPlayerHasTurnsRemaining() {
@@ -130,6 +194,7 @@ public class GameBoardController {
 
     private void checkIfWinConditionMet() {
         if (winConditionMet()) {
+            enterKeyPushed();
             // Pop up needed.
         } else {
             resetUserWord();
@@ -145,13 +210,7 @@ public class GameBoardController {
         return true;
     }
 
-    private void flipAnimationForValidWord() {
-        for (int i = 0; i < userWordLetters.length; i++) {
-            flipAnimation(letterBoxes[rowIndex][i]);
-        }
-    }
-
-    private void flipAnimation(final Label letterBox) {
+    private void animateLetter(final Label letterBox, final String color) {
         ScaleTransition showLetterBack = new ScaleTransition(Duration.millis(250), letterBox);
         showLetterBack.setFromY(1);
         showLetterBack.setToY(0);
@@ -161,10 +220,13 @@ public class GameBoardController {
         showLetterFront.setToY(1);
 
         showLetterBack.play();
-        showLetterBack.setOnFinished(actionEvent -> showLetterFront.play());
+        showLetterBack.setOnFinished(actionEvent -> {
+            letterBox.setStyle("-fx-background-color: " + color);
+            showLetterFront.play();
+        });
     }
 
-    private void bounceAnimationForInvalidWord() {
+    private void invalidWordAnimation() {
         if (System.currentTimeMillis() - lastBounceAnimation > 500) {
             for (int i = 0; i < LETTERS_PER_WORD; i++) {
                 bounceAnimation(letterBoxes[rowIndex][i]);

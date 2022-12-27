@@ -9,9 +9,9 @@ import java.io.IOException;
 
 public class GameBoardApplication extends Application {
 
-    private final String windowTitle          = "Wordle Clone";
-    private final int    windowWidthInPixels  = 500;
-    private final int    windowHeightInPixels = 650;
+    private static final String WINDOW_TITLE = "Wordle Clone";
+    private static final int    WINDOW_WIDTH_IN_PIXELS = 500;
+    private static final int    WINDOW_HEIGHT_IN_PIXELS = 650;
 
     /**
      * Runs the program.
@@ -22,7 +22,7 @@ public class GameBoardApplication extends Application {
     public void start(final Stage stage) throws IOException {
 
         FXMLLoader fxmlLoader = new FXMLLoader(GameBoardApplication.class.getResource("gameboard.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), windowWidthInPixels, windowHeightInPixels);
+        Scene scene = new Scene(fxmlLoader.load(), WINDOW_WIDTH_IN_PIXELS, WINDOW_HEIGHT_IN_PIXELS);
 
         GameBoardController controller = fxmlLoader.getController();
 
@@ -38,10 +38,10 @@ public class GameBoardApplication extends Application {
                 controller.backspaceKeyPushed();
             }
         });
-
         controller.initializeLetterBoxes();
+        controller.initializeButtons();
 
-        stage.setTitle(windowTitle);
+        stage.setTitle(WINDOW_TITLE);
         stage.setScene(scene);
         stage.show();
     }
