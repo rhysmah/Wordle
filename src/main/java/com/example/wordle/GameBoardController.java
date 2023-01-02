@@ -1,21 +1,16 @@
 package com.example.wordle;
 
-import javafx.animation.ScaleTransition;
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.util.Duration;
 import java.util.Arrays;
 import java.util.Random;
 
 public class GameBoardController {
 
-    private static final int    LETTERS_PER_WORD          = 5;
-    private static final int    TURNS_PER_GAME            = 6;
-    private static final String CONTAINS_VALID_CHARACTERS = "^[a-zA-Z]*$";
-    private static final Random RANDOM = new Random();
+    private static final int    TURNS_PER_GAME = 6;
+    private static final Random RANDOM         = new Random();
 
     private final String[]  userWordLetters;
     private final boolean[] winCondition;
@@ -69,7 +64,6 @@ public class GameBoardController {
     private int       letterIndex;
     private int       rowIndex;
     private int       playerTurn;
-    private long      lastBounceAnimation;
     private String    gameWord;
 
     /**
@@ -80,7 +74,7 @@ public class GameBoardController {
         rowIndex        = 0;
         playerTurn      = 0;
         winCondition    = new boolean[] { false, false, false, false, false} ;
-        userWordLetters = new String[LETTERS_PER_WORD];
+        userWordLetters = new String[Word.LETTERS_PER_WORD];
         gameWord        = WordList.WORDS[RANDOM.nextInt(WordList.WORDS.length - 1)];
     }
 
@@ -122,26 +116,23 @@ public class GameBoardController {
     protected void enterKeyPushed() {
 
         // Enter key stops working when user wins game.
-        if (userWordLetters.length == LETTERS_PER_WORD && !winConditionMet()) {
+        if (userWordLetters.length == Word.LETTERS_PER_WORD && !winConditionMet()) {
             String userWord = String.join("", userWordLetters);
 
-            if (validateUserGuess(userWord)) {
+            if (Word.validateUserGuess(userWord)) {
                 printLetter();
 
-                // Increment player turn, then move to the first letter of the next row.
                 playerTurn++;
                 rowIndex++;
                 letterIndex = 0;
 
             } else {
-                invalidWordAnimation();
+                Animations.invalidWordAnimation(letterBoxes, rowIndex);
             }
         }
-
         if (winConditionMet()) {
             PopUpWindow.display("You won!", "The word was indeed " + gameWord);
         }
-
         if (playerHasNoTurnsRemaining()) {
             PopUpWindow.display("You lost!", "The word was " + gameWord);
         }
@@ -166,23 +157,23 @@ public class GameBoardController {
         letterIndex = 0;
         String[] gameWordLetters  = gameWord.split("");
 
-        while (letterIndex < LETTERS_PER_WORD) {
+        while (letterIndex < Word.LETTERS_PER_WORD) {
             String playerWordLetter = userWordLetters[letterIndex];
             Label  gameWordLetter   = letterBoxes[rowIndex][letterIndex];
 
             if (playerWordLetter.equals(gameWordLetters[letterIndex])) {
-                animateLetter(gameWordLetter, "#3CB371;"); // Green
+                Animations.animateLetter(gameWordLetter, "#3CB371;"); // Green
                 gameWordLetters[letterIndex] = "";
                 userWordLetters[letterIndex] = "";
                 winCondition[letterIndex] = true;
 
             } else if (Arrays.asList(gameWordLetters).contains(playerWordLetter)) {
-                animateLetter(gameWordLetter, "#FFD700;"); // Yellow
+                Animations.animateLetter(gameWordLetter, "#FFD700;"); // Yellow
                 gameWordLetters[letterIndex] = "";
                 userWordLetters[letterIndex] = "";
 
             } else {
-                animateLetter(gameWordLetter, "#DCDCDC;"); // Grey
+                Animations.animateLetter(gameWordLetter, "#DCDCDC;"); // Grey
             }
             letterIndex++;
         }
@@ -205,41 +196,6 @@ public class GameBoardController {
         return true;
     }
 
-    private void animateLetter(final Label letterBox, final String color) {
-        ScaleTransition showLetterBack = new ScaleTransition(Duration.millis(250), letterBox);
-        showLetterBack.setFromY(1);
-        showLetterBack.setToY(0);
-
-        ScaleTransition showLetterFront = new ScaleTransition(Duration.millis(250), letterBox);
-        showLetterFront.setFromY(0);
-        showLetterFront.setToY(1);
-
-        showLetterBack.play();
-        showLetterBack.setOnFinished(actionEvent -> {
-            letterBox.setStyle("-fx-background-color: " + color);
-            showLetterFront.play();
-        });
-    }
-
-    private void invalidWordAnimation() {
-        if (System.currentTimeMillis() - lastBounceAnimation > 500) {
-            for (int i = 0; i < LETTERS_PER_WORD; i++) {
-                bounceAnimation(letterBoxes[rowIndex][i]);
-                lastBounceAnimation = System.currentTimeMillis();
-            }
-        }
-    }
-
-    private void bounceAnimation(final Label label) {
-        Duration wiggleDuration = Duration.millis(100);
-        TranslateTransition wiggleLetterBox = new TranslateTransition(wiggleDuration, label);
-
-        wiggleLetterBox.setToX(20);
-        wiggleLetterBox.setAutoReverse(true);
-        wiggleLetterBox.setCycleCount(4);
-        wiggleLetterBox.play();
-    }
-
     private void addLetterToUserWord(final String letter) {
         userWordLetters[letterIndex] = letter;
     }
@@ -250,33 +206,5 @@ public class GameBoardController {
             addLetterToUserWord(letter);
             letterIndex++;
         }
-    }
-
-    /*
-     * Checks that a word contains specified letters per word.
-     */
-    private boolean validLength(final String word) {
-        return word.length() == LETTERS_PER_WORD;
-    }
-
-    /*
-     * Checks that a word contains valid characters.
-     */
-    private boolean validCharacters(final String word) {
-        return word.matches(CONTAINS_VALID_CHARACTERS);
-    }
-
-    /*
-     * Checks if the userWord is in the word list.
-     */
-    private boolean validWord(final String word) {
-        return Arrays.asList(WordList.WORDS).contains(word);
-    }
-
-    /*
-     * Checks that word is a valid five-letter English word.
-     */
-    private boolean validateUserGuess(final String word) {
-        return validLength(word) && validCharacters(word) && validWord(word);
     }
 }

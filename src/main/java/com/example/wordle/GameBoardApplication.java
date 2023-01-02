@@ -13,6 +13,8 @@ public class GameBoardApplication extends Application {
     private static final int    WINDOW_WIDTH_IN_PIXELS = 500;
     private static final int    WINDOW_HEIGHT_IN_PIXELS = 650;
 
+    private long animationDelay;
+
     /**
      * Runs the program.
      * @param stage to be shown.
@@ -31,8 +33,9 @@ public class GameBoardApplication extends Application {
             if (keyEvent.getCode().isLetterKey()) {
                 controller.letterKeyPushed(keyEvent.getText().toUpperCase());
             }
-            if (keyEvent.getCode() == KeyCode.ENTER) {
+            if (keyEvent.getCode() == KeyCode.ENTER && System.currentTimeMillis() - animationDelay > 500) {
                 controller.enterKeyPushed();
+                animationDelay = System.currentTimeMillis();
             }
             if (keyEvent.getCode() == KeyCode.BACK_SPACE) {
                 controller.backspaceKeyPushed();
