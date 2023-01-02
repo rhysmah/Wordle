@@ -97,7 +97,7 @@ public class GameBoardController {
 
     public void initializeButtons() {
         startGame.setOnAction(actionEvent -> startGameButtonClick());
-        quitGame.setOnAction(actionEvent -> quitGameButtonClick());
+        quitGame.setOnAction(actionEvent  -> quitGameButtonClick());
     }
 
     public void startGameButtonClick() {
@@ -108,9 +108,10 @@ public class GameBoardController {
             }
         }
         letterIndex = 0;
-        rowIndex = 0;
-        playerTurn = 0;
-        gameWord = WordList.WORDS[RANDOM.nextInt(WordList.WORDS.length - 1)];
+        rowIndex    = 0;
+        playerTurn  = 0;
+        gameWord    = WordList.WORDS[RANDOM.nextInt(WordList.WORDS.length - 1)];
+
         resetUserWord();
     }
 
@@ -126,8 +127,6 @@ public class GameBoardController {
 
             if (validateUserGuess(userWord)) {
                 printLetter();
-                checkIfWinConditionMet();
-                checkIfPlayerHasTurnsRemaining();
 
                 // Increment player turn, then move to the first letter of the next row.
                 playerTurn++;
@@ -137,6 +136,14 @@ public class GameBoardController {
             } else {
                 invalidWordAnimation();
             }
+        }
+
+        if (winConditionMet()) {
+            PopUpWindow.display("You won!", "The word was indeed " + gameWord);
+        }
+
+        if (playerHasNoTurnsRemaining()) {
+            PopUpWindow.display("You lost!", "The word was " + gameWord);
         }
     }
 
@@ -150,7 +157,7 @@ public class GameBoardController {
 
     protected void letterKeyPushed(final String letter) {
         if (!winConditionMet()) {
-            addLetterToGameboardLetterBox(letter);
+            addLetterToGameBoardLetterBox(letter);
         }
     }
 
@@ -181,24 +188,12 @@ public class GameBoardController {
         }
     }
 
-    private void checkIfPlayerHasTurnsRemaining() {
-        if (playerTurn == TURNS_PER_GAME) {
-            // End game pop-up
-            // Ask if they want to play again or quit.
-        }
+    private boolean playerHasNoTurnsRemaining() {
+        return playerTurn == TURNS_PER_GAME;
     }
 
     private void resetUserWord() {
         Arrays.fill(userWordLetters, "");
-    }
-
-    private void checkIfWinConditionMet() {
-        if (winConditionMet()) {
-            enterKeyPushed();
-            // Pop up needed.
-        } else {
-            resetUserWord();
-        }
     }
 
     private boolean winConditionMet() {
@@ -249,7 +244,7 @@ public class GameBoardController {
         userWordLetters[letterIndex] = letter;
     }
 
-    private void addLetterToGameboardLetterBox(final String letter) {
+    private void addLetterToGameBoardLetterBox(final String letter) {
         if (letterIndex < 5) {
             letterBoxes[rowIndex][letterIndex].setText(letter);
             addLetterToUserWord(letter);
